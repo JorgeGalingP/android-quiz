@@ -1,6 +1,8 @@
 package com.ldm.practica1;
 
+import android.content.Intent;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,6 +17,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    private List<Question> questionList = null;
+    private TextView textView = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,26 +26,35 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // call API GET method
-        find();
+        findQuestions("10");
     }
 
-    private void find(){
+    private void findQuestions(String limit){
         Retrofit retrofit = new Retrofit.Builder().baseUrl("https://quizapi.io/")
                 .addConverterFactory(GsonConverterFactory.create()).build();
 
         QuestionsAPI api = retrofit.create(QuestionsAPI.class);
 
-        Call<List<Question>> call = api.findQuestions();
+        Call<List<Question>> call = api.findQuestions(limit);
 
         call.enqueue(new Callback<List<Question>>() {
             @Override
             public void onResponse(Call<List<Question>> call, Response<List<Question>> response) {
                 try {
-                    if (response.isSuccessful()){
-                        List<Question> questionList = response.body();
+                    if (response.isSuccessful()) {
+                        questionList = response.body();
 
-                        if (questionList != null){
-                        for (Question q : questionList){
+                        Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                        finish();
+                        overridePendingTransition(0, 0);
+                        startActivity(intent);
+                        overridePendingTransition(0, 0);
+
+                        textView = findViewById(R.id.firstTextView);
+                        textView.setText(questionList.get(0).toString());
+
+                        if (questionList != null) {
+                            for (Question q : questionList) {
                                 Log.println(Log.VERBOSE, "TESTING", q.toString());
                             }
                         }

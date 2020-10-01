@@ -1,5 +1,6 @@
 package com.ldm.practica1.models;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class Question {
@@ -161,11 +162,11 @@ public class Question {
                 ", description='" + description + '\'' +
                 ", answers='" + answers.toString() + '\'' +
                 ", multiple_correct_answers=" + multiple_correct_answers +
-                //", correct_answers='" + correct_answers + '\'' +
+                ", correct_answers='" + correct_answers.toString() + '\'' +
                 ", correct_answer='" + correct_answer + '\'' +
                 ", explanation='" + explanation + '\'' +
                 ", tip='" + tip + '\'' +
-                //", tags='" + tags + '\'' +
+                ", tags='" + Arrays.toString(tags.toArray()) + '\'' +
                 ", category='" + category + '\'' +
                 ", difficulty='" + difficulty + '\'' +
                 '}';

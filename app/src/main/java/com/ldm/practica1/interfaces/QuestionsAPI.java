@@ -11,6 +11,6 @@ import java.util.List;
 public interface QuestionsAPI {
 
     @Headers({"X-Api-Key: 9TYKinH2FetAWIHJrauI6wAUqNCLmUX1WyVOpT3Q"})
-    @GET("api/v1/questions?limit=10")
-    public Call<List<Question>> findQuestions();
+    @GET("api/v1/questions")
+    public Call<List<Question>> findQuestions(@Query("limit") String limit);
 }
