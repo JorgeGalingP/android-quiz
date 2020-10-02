@@ -1,13 +1,12 @@
 package com.ldm.practica1;
 
-import android.content.Intent;
 import android.util.Log;
-import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import com.ldm.practica1.interfaces.QuestionsAPI;
+import com.ldm.practica1.interfaces.QuestionService;
 import com.ldm.practica1.models.Question;
+import com.ldm.practica1.utils.ApiClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -18,7 +17,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private List<Question> questionList = null;
-    private TextView textView = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,16 +24,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // call API GET method
-        findQuestions("10");
-    }
-
-    private void findQuestions(String limit){
-        Retrofit retrofit = new Retrofit.Builder().baseUrl("https://quizapi.io/")
-                .addConverterFactory(GsonConverterFactory.create()).build();
-
-        QuestionsAPI api = retrofit.create(QuestionsAPI.class);
-
-        Call<List<Question>> call = api.findQuestions(limit);
+        Call<List<Question>> call = ApiClient.getQuestionService().getQuestions("10");
 
         call.enqueue(new Callback<List<Question>>() {
             @Override
@@ -43,16 +32,6 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     if (response.isSuccessful()) {
                         questionList = response.body();
-
-                        Intent intent = new Intent(MainActivity.this, MainActivity.class);
-                        finish();
-                        overridePendingTransition(0, 0);
-                        startActivity(intent);
-                        overridePendingTransition(0, 0);
-
-                        textView = findViewById(R.id.firstTextView);
-                        textView.setText(questionList.get(0).toString());
-
                         if (questionList != null) {
                             for (Question q : questionList) {
                                 Log.println(Log.VERBOSE, "TESTING", q.toString());

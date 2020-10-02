@@ -8,9 +8,9 @@ import retrofit2.http.Query;
 
 import java.util.List;
 
-public interface QuestionsAPI {
+public interface QuestionService {
 
     @Headers({"X-Api-Key: 9TYKinH2FetAWIHJrauI6wAUqNCLmUX1WyVOpT3Q"})
     @GET("api/v1/questions")
-    public Call<List<Question>> findQuestions(@Query("limit") String limit);
+    public Call<List<Question>> getQuestions(@Query("limit") String limit);
 }
