@@ -1,42 +1,62 @@
 package com.ldm.practica1;
 
-import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import com.ldm.practica1.interfaces.QuestionService;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import com.ldm.practica1.adapters.QuestionAdapter;
 import com.ldm.practica1.models.Question;
 import com.ldm.practica1.utils.ApiClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private List<Question> questionList = null;
+    private RecyclerView recyclerView;
+    private QuestionAdapter questionAdapter;
+    private ProgressBar progressBar;
+    private List<Question> questionList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        progressBar = findViewById(R.id.progressBar);
+        progressBar.setIndeterminate(true);
+        progressBar.setVisibility(View.VISIBLE);
+
+        questionList = new ArrayList<>();
+
         // call API GET method
         Call<List<Question>> call = ApiClient.getQuestionService().getQuestions("10");
-
         call.enqueue(new Callback<List<Question>>() {
             @Override
             public void onResponse(Call<List<Question>> call, Response<List<Question>> response) {
                 try {
                     if (response.isSuccessful()) {
                         questionList = response.body();
-                        if (questionList != null) {
-                            for (Question q : questionList) {
-                                Log.println(Log.VERBOSE, "TESTING", q.toString());
-                            }
-                        }
+
+                        // set ProgressBar
+                        progressBar.setVisibility(View.INVISIBLE);
+
+                        // set RecyclerView
+                        recyclerView = findViewById(R.id.recyclerView);
+                        recyclerView.setHasFixedSize(true);
+
+                        // set Adapter
+                        questionAdapter = new QuestionAdapter(questionList);
+                        recyclerView.setAdapter(questionAdapter);
+
+                        // set the LinearLayoutManager
+                        LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+                        recyclerView.setLayoutManager(layoutManager);
                     }
                 }catch (Exception ex){
                     Toast.makeText(MainActivity.this, ex.getMessage(), Toast.LENGTH_SHORT).show();

@@ -158,7 +158,7 @@ public class Question {
     public String toString() {
         return "Question{" +
                 "id='" + id + '\'' +
-                ", question='" + question + '\'' +
+                ", item_question='" + question + '\'' +
                 ", description='" + description + '\'' +
                 ", answers='" + answers.toString() + '\'' +
                 ", multiple_correct_answers=" + multiple_correct_answers +
