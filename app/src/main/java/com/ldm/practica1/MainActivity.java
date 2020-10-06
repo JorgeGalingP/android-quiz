@@ -8,6 +8,7 @@ import android.os.Bundle;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.ldm.practica1.adapters.QuestionAdapter;
 import com.ldm.practica1.models.Question;
 import com.ldm.practica1.utils.ApiClient;
@@ -51,6 +52,20 @@ public class MainActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
 
+        // set Questions
+        setQuestions();
+
+        // set Fab
+        FloatingActionButton fab = findViewById(R.id.reloadFab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setQuestions();
+            }
+        });
+    }
+
+    private void setQuestions(){
         // call API GET method
         Call<List<Question>> call = ApiClient.getQuestionService().getQuestions("5");
         call.enqueue(new Callback<List<Question>>() {
