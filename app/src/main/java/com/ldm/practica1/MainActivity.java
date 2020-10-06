@@ -5,6 +5,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.ldm.practica1.adapters.QuestionAdapter;
@@ -23,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private List<Question> questionList;
 
+    // TODO progressBar accurate with callback real progress
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,29 +37,36 @@ public class MainActivity extends AppCompatActivity {
 
         questionList = new ArrayList<>();
 
+        // set RecyclerView
+        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.addItemDecoration(
+                new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+
+        // set Adapter
+        questionAdapter = new QuestionAdapter(questionList);
+        recyclerView.setAdapter(questionAdapter);
+
+        // set the LinearLayoutManager
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(layoutManager);
+
         // call API GET method
-        Call<List<Question>> call = ApiClient.getQuestionService().getQuestions("10");
+        Call<List<Question>> call = ApiClient.getQuestionService().getQuestions("5");
         call.enqueue(new Callback<List<Question>>() {
             @Override
             public void onResponse(Call<List<Question>> call, Response<List<Question>> response) {
                 try {
                     if (response.isSuccessful()) {
-                        questionList = response.body();
+                        if (response.body() != null){
+                            questionAdapter.setQuestionsAndNotify(response.body());
 
-                        // set ProgressBar
-                        progressBar.setVisibility(View.INVISIBLE);
-
-                        // set RecyclerView
-                        recyclerView = findViewById(R.id.recyclerView);
-                        recyclerView.setHasFixedSize(true);
-
-                        // set Adapter
-                        questionAdapter = new QuestionAdapter(questionList);
-                        recyclerView.setAdapter(questionAdapter);
-
-                        // set the LinearLayoutManager
-                        LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-                        recyclerView.setLayoutManager(layoutManager);
+                            // set ProgressBar
+                            progressBar.setVisibility(View.GONE);
+                        }
+                    }
+                    else{
+                        Toast.makeText(MainActivity.this, "Error response from server.", Toast.LENGTH_SHORT).show();
                     }
                 }catch (Exception ex){
                     Toast.makeText(MainActivity.this, ex.getMessage(), Toast.LENGTH_SHORT).show();
