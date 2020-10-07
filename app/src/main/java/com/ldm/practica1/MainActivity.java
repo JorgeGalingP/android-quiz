@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private List<Question> questionList;
 
     // TODO progressBar accurate with callback real progress
+    // TODO refresh button don't work when a answer is answered
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,14 +61,22 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setQuestions();
+                reloadActivity();
             }
         });
     }
 
+    protected void reloadActivity() {
+        overridePendingTransition(0, 0);
+        finish();
+        overridePendingTransition(0, 0);
+        startActivity(getIntent());
+        overridePendingTransition(0, 0);
+    }
+
     private void setQuestions(){
-        // call API GET method
         Call<List<Question>> call = ApiClient.getQuestionService().getQuestions("5");
+
         call.enqueue(new Callback<List<Question>>() {
             @Override
             public void onResponse(Call<List<Question>> call, Response<List<Question>> response) {

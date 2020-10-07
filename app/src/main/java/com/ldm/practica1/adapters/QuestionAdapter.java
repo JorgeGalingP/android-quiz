@@ -146,7 +146,7 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
                     }
 
                 } else {
-                    Toast.makeText(holder.context, "Error on Answer.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(holder.context, "You have to select an answer.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
