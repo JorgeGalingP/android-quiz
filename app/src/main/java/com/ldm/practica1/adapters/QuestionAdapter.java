@@ -2,11 +2,13 @@ package com.ldm.practica1.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import androidx.recyclerview.widget.RecyclerView;
+import com.ldm.practica1.MainActivity;
 import com.ldm.practica1.R;
 import com.ldm.practica1.models.Question;
 import com.ldm.practica1.utils.AnswerChecker;
@@ -15,9 +17,12 @@ import java.util.List;
 
 public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHolder> {
     private List<Question> questionList;
+    private MainActivity mainActivity;
 
-    public QuestionAdapter(List<Question> questionList) {
+    public QuestionAdapter(MainActivity mainActivity,
+                           List<Question> questionList) {
         this.questionList = questionList;
+        this.mainActivity = mainActivity;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -30,9 +35,11 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
         public RadioButton radioButtonD;
         public RadioButton radioButtonE;
         public RadioButton radioButtonF;
+        public ProgressBar questionProgressBar;
         private Context context;
 
-        public ViewHolder(Context context,
+        public ViewHolder(MainActivity mainActivity,
+                          Context context,
                           View itemView) {
             super(itemView);
 
@@ -46,6 +53,9 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
             radioButtonD = itemView.findViewById(R.id.answer_d);
             radioButtonE = itemView.findViewById(R.id.answer_e);
             radioButtonF = itemView.findViewById(R.id.answer_f);
+
+            // set MainActivity views
+            questionProgressBar = mainActivity.findViewById(R.id.questionsProgress);
 
             // store the context
             this.context = context;
@@ -62,7 +72,7 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
                 Question question = questionList.get(position);
                 String message = "Category: " + question.getCategory() + "\n" + "Difficulty: " + question.getDifficulty();
 
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this.context, message, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -74,7 +84,7 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
         LayoutInflater layoutInflater = LayoutInflater.from(context);
 
         View questionView = layoutInflater.inflate(R.layout.item_question, parent, false);
-        ViewHolder questionViewHolder = new ViewHolder(context, questionView);
+        ViewHolder questionViewHolder = new ViewHolder(this.mainActivity, context, questionView);
 
         return questionViewHolder;
     }
@@ -98,6 +108,9 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
         RadioButton radioButtonAnswerD = holder.radioButtonD;
         RadioButton radioButtonAnswerE = holder.radioButtonE;
         RadioButton radioButtonAnswerF = holder.radioButtonF;
+
+        // set ProgressBar
+        ProgressBar questionProgressBar = holder.questionProgressBar;
 
         if (question.getAnswers().getAnswer_a() != null){
             radioButtonAnswerA.setVisibility(View.VISIBLE);
@@ -130,19 +143,23 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
             @Override
             public void onClick(View view) {
                 int answeredRadioButtonId = radioGroupAnswers.getCheckedRadioButtonId();
+
                 if (answeredRadioButtonId != -1) {
+                    // answer logic
                     RadioButton answer = radioGroupAnswers.findViewById(answeredRadioButtonId);
                     boolean check = AnswerChecker.CheckCorrectAnswer(answer.getText().toString(), question);
 
+                    questionProgressBar.setProgress(questionProgressBar.getProgress() + (100 / questionList.size()));
+
                     if (check){
                         Toast.makeText(holder.context, "Correct answer!", Toast.LENGTH_LONG).show();
-                        answer.setTextColor(Color.GREEN);
+                        answer.setTextColor(Color.parseColor("#03DAC5"));
                     }
                     else
                         Toast.makeText(holder.context, "Incorrect answer!", Toast.LENGTH_LONG).show();
 
                     for (int i = 0; i < radioGroupAnswers.getChildCount(); i++) {
-                        radioGroupAnswers.getChildAt(i).setEnabled(false);
+                        ((RadioButton) radioGroupAnswers.getChildAt(i)).setEnabled(false);
                     }
 
                 } else {

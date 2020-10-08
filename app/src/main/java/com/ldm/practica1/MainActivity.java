@@ -23,10 +23,8 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private QuestionAdapter questionAdapter;
     private ProgressBar progressBar;
+    private ProgressBar questionsProgressBar;
     private List<Question> questionList;
-
-    // TODO progressBar accurate with callback real progress
-    // TODO refresh button don't work when a answer is answered
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +35,9 @@ public class MainActivity extends AppCompatActivity {
         progressBar.setIndeterminate(true);
         progressBar.setVisibility(View.VISIBLE);
 
+        questionsProgressBar = findViewById(R.id.questionsProgress);
+        questionsProgressBar.setVisibility(View.INVISIBLE);
+
         questionList = new ArrayList<>();
 
         // set RecyclerView
@@ -46,10 +47,10 @@ public class MainActivity extends AppCompatActivity {
                 new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         // set Adapter
-        questionAdapter = new QuestionAdapter(questionList);
+        questionAdapter = new QuestionAdapter(this, questionList);
         recyclerView.setAdapter(questionAdapter);
 
-        // set the LinearLayoutManager
+        // set LinearLayoutManager
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
 
@@ -85,8 +86,9 @@ public class MainActivity extends AppCompatActivity {
                         if (response.body() != null){
                             questionAdapter.setQuestionsAndNotify(response.body());
 
-                            // set ProgressBar
+                            // set ProgressBars
                             progressBar.setVisibility(View.GONE);
+                            questionsProgressBar.setVisibility(View.VISIBLE);
                         }
                     }
                     else{
