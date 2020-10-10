@@ -24,7 +24,10 @@ public class MainActivity extends AppCompatActivity {
     private QuestionAdapter questionAdapter;
     private ProgressBar progressBar;
     private ProgressBar questionsProgressBar;
+
     private List<Question> questionList;
+    private int points;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
                 new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         // set Adapter
-        questionAdapter = new QuestionAdapter(this, questionList);
+        questionAdapter = new QuestionAdapter(this);
         recyclerView.setAdapter(questionAdapter);
 
         // set LinearLayoutManager
@@ -57,7 +60,8 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.getRecycledViewPool().setMaxRecycledViews(R.id.recyclerView, 0);
 
         // set Questions
-        setQuestions();
+        setQuestionList();
+        setPoints(0);
 
         // set Fab
         FloatingActionButton fab = findViewById(R.id.reloadFab);
@@ -77,7 +81,15 @@ public class MainActivity extends AppCompatActivity {
         overridePendingTransition(0, 0);
     }
 
-    private void setQuestions(){
+    public List<Question> getQuestionList() {
+        return questionList;
+    }
+
+    public void setQuestionList(List<Question> questionList){
+        this.questionList = questionList;
+    }
+
+    private void setQuestionList(){
         Call<List<Question>> call = ApiClient.getQuestionService().getQuestions("5");
 
         call.enqueue(new Callback<List<Question>>() {
@@ -106,5 +118,21 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public int getPoints() {
+        return points;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
+    }
+
+    public void addPoints(){
+        this.points += 3;
+    }
+
+    public void removePoints(){
+        this.points -= 2;
     }
 }

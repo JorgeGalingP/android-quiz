@@ -2,7 +2,6 @@ package com.ldm.practica1.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,12 +15,9 @@ import com.ldm.practica1.utils.AnswerChecker;
 import java.util.List;
 
 public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHolder> {
-    private List<Question> questionList;
     private MainActivity mainActivity;
 
-    public QuestionAdapter(MainActivity mainActivity,
-                           List<Question> questionList) {
-        this.questionList = questionList;
+    public QuestionAdapter(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
     }
 
@@ -68,7 +64,7 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
             int position = getAdapterPosition();
 
             if (position != RecyclerView.NO_POSITION) {
-                Question question = questionList.get(position);
+                Question question = mainActivity.getQuestionList().get(position);
                 String message = "Category: " + question.getCategory() + "\n" + "Difficulty: " + question.getDifficulty();
 
                 Toast.makeText(this.context, message, Toast.LENGTH_SHORT).show();
@@ -91,7 +87,7 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         // involves populating data into the item through holder
-        Question question = questionList.get(position);
+        Question question = mainActivity.getQuestionList().get(position);
 
         // set TextView
         TextView textView = holder.questionTextView;
@@ -147,14 +143,19 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
                     RadioButton answer = radioGroupAnswers.findViewById(answeredRadioButtonId);
                     boolean check = AnswerChecker.CheckCorrectAnswer(answer.getText().toString(), question);
 
-                    questionProgressBar.setProgress(questionProgressBar.getProgress() + (Math.round((float)100 / questionList.size())));
+                    questionProgressBar.setProgress(questionProgressBar.getProgress() + (Math.round((float)100 / mainActivity.getQuestionList().size())));
 
                     if (check){
-                        Toast.makeText(holder.context, "Correct answer!", Toast.LENGTH_LONG).show();
+                        mainActivity.addPoints();
+
+                        Toast.makeText(holder.context, "Correct answer! Current points: " + mainActivity.getPoints(), Toast.LENGTH_LONG).show();
                         answer.setTextColor(Color.parseColor("#03DAC5"));
                     }
-                    else
-                        Toast.makeText(holder.context, "Incorrect answer!", Toast.LENGTH_LONG).show();
+                    else{
+                        mainActivity.removePoints();
+
+                        Toast.makeText(holder.context, "Incorrect answer! Current points: " + mainActivity.getPoints(), Toast.LENGTH_LONG).show();
+                    }
 
                     for (int i = 0; i < radioGroupAnswers.getChildCount(); i++) {
                         ((RadioButton) radioGroupAnswers.getChildAt(i)).setEnabled(false);
@@ -174,12 +175,12 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
 
     @Override
     public int getItemCount() {
-        return questionList.size();
+        return mainActivity.getQuestionList().size();
     }
 
     public void setQuestionsAndNotify(List<Question> questionList){
-        this.questionList.clear();
-        this.questionList = questionList;
+        mainActivity.getQuestionList().clear();
+        mainActivity.setQuestionList(questionList);
 
         notifyDataSetChanged();
     }
