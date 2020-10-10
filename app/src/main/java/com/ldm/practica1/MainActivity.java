@@ -54,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
 
+        recyclerView.getRecycledViewPool().setMaxRecycledViews(R.id.recyclerView, 0);
+
         // set Questions
         setQuestions();
 

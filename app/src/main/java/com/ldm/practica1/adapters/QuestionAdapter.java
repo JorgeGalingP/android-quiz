@@ -42,7 +42,6 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
                           Context context,
                           View itemView) {
             super(itemView);
-
             // set views
             questionTextView = itemView.findViewById(R.id.questionTextView);
             checkButton = itemView.findViewById(R.id.check_answer);
@@ -111,7 +110,6 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
 
         // set ProgressBar
         ProgressBar questionProgressBar = holder.questionProgressBar;
-
         if (question.getAnswers().getAnswer_a() != null){
             radioButtonAnswerA.setVisibility(View.VISIBLE);
             radioButtonAnswerA.setText(question.getAnswers().getAnswer_a());
@@ -149,7 +147,7 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
                     RadioButton answer = radioGroupAnswers.findViewById(answeredRadioButtonId);
                     boolean check = AnswerChecker.CheckCorrectAnswer(answer.getText().toString(), question);
 
-                    questionProgressBar.setProgress(questionProgressBar.getProgress() + (100 / questionList.size()));
+                    questionProgressBar.setProgress(questionProgressBar.getProgress() + (Math.round((float)100 / questionList.size())));
 
                     if (check){
                         Toast.makeText(holder.context, "Correct answer!", Toast.LENGTH_LONG).show();
@@ -167,6 +165,11 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
                 }
             }
         });
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
     }
 
     @Override
