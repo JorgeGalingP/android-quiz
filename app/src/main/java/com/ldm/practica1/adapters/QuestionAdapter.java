@@ -1,6 +1,9 @@
 package com.ldm.practica1.adapters;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +12,7 @@ import android.widget.*;
 import androidx.recyclerview.widget.RecyclerView;
 import com.ldm.practica1.MainActivity;
 import com.ldm.practica1.R;
+import com.ldm.practica1.ResultActivity;
 import com.ldm.practica1.models.Question;
 import com.ldm.practica1.utils.AnswerChecker;
 
@@ -165,7 +169,25 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
                     }
 
                     if (answeredQuestions == mainActivity.getQuestionCount()){
-                        // TODO launch listener to mainActivity
+                        AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);
+                        builder
+                                .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        Intent intent = new Intent(mainActivity, ResultActivity.class);
+                                        intent.putExtra("result", String.valueOf(mainActivity.getPoints())); // result parameter
+
+                                        mainActivity.startActivity(intent);
+                                    }
+                                })
+                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .setMessage(mainActivity.getPoints() + " points.")
+                                .setTitle("Final result");
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
                     }
 
                 } else {
