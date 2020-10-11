@@ -20,14 +20,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private RecyclerView recyclerView;
     private QuestionAdapter questionAdapter;
     private ProgressBar progressBar;
     private ProgressBar questionsProgressBar;
 
     private List<Question> questionList;
+    private int questionCount;
     private int points;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         questionList = new ArrayList<>();
 
         // set RecyclerView
-        recyclerView = findViewById(R.id.recyclerView);
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(
                 new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
@@ -60,8 +59,9 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.getRecycledViewPool().setMaxRecycledViews(R.id.recyclerView, 0);
 
         // set Questions
-        setQuestionList();
+        setQuestionCount(5);
         setPoints(0);
+        setQuestionList();
 
         // set Fab
         FloatingActionButton fab = findViewById(R.id.reloadFab);
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setQuestionList(){
-        Call<List<Question>> call = ApiClient.getQuestionService().getQuestions("5");
+        Call<List<Question>> call = ApiClient.getQuestionService().getQuestions(String.valueOf(this.getQuestionCount()));
 
         call.enqueue(new Callback<List<Question>>() {
             @Override
@@ -120,8 +120,16 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public int getQuestionCount() {
+        return this.questionCount;
+    }
+
+    public void setQuestionCount(int questionCount) {
+        this.questionCount = questionCount;
+    }
+
     public int getPoints() {
-        return points;
+        return this.points;
     }
 
     public void setPoints(int points) {
@@ -132,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
         this.points += 3;
     }
 
-    public void removePoints(){
+    public void subtractPoints(){
         this.points -= 2;
     }
 }

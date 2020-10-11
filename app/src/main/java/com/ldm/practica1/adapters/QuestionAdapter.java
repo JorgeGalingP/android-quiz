@@ -16,9 +16,11 @@ import java.util.List;
 
 public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHolder> {
     private MainActivity mainActivity;
+    private int answeredQuestions;
 
     public QuestionAdapter(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
+        this.answeredQuestions = 0;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -144,6 +146,7 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
                     boolean check = AnswerChecker.CheckCorrectAnswer(answer.getText().toString(), question);
 
                     questionProgressBar.setProgress(questionProgressBar.getProgress() + (Math.round((float)100 / mainActivity.getQuestionList().size())));
+                    answeredQuestions += 1;
 
                     if (check){
                         mainActivity.addPoints();
@@ -152,13 +155,17 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
                         answer.setTextColor(Color.parseColor("#03DAC5"));
                     }
                     else{
-                        mainActivity.removePoints();
+                        mainActivity.subtractPoints();
 
                         Toast.makeText(holder.context, "Incorrect answer! Current points: " + mainActivity.getPoints(), Toast.LENGTH_LONG).show();
                     }
 
                     for (int i = 0; i < radioGroupAnswers.getChildCount(); i++) {
                         ((RadioButton) radioGroupAnswers.getChildAt(i)).setEnabled(false);
+                    }
+
+                    if (answeredQuestions == mainActivity.getQuestionCount()){
+                        // TODO launch listener to mainActivity
                     }
 
                 } else {
@@ -176,6 +183,10 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
     @Override
     public int getItemCount() {
         return mainActivity.getQuestionList().size();
+    }
+
+    public int getAnsweredQuestions() {
+        return answeredQuestions;
     }
 
     public void setQuestionsAndNotify(List<Question> questionList){
