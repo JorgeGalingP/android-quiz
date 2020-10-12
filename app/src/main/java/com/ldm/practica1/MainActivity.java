@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    protected void reloadActivity() {
+    public void reloadActivity() {
         overridePendingTransition(0, 0);
         finish();
         overridePendingTransition(0, 0);

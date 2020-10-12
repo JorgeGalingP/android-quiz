@@ -10,10 +10,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.ldm.practica1.MainActivity;
 import com.ldm.practica1.R;
 import com.ldm.practica1.ResultActivity;
 import com.ldm.practica1.models.Question;
+import com.ldm.practica1.models.Tag;
 import com.ldm.practica1.utils.AnswerChecker;
 
 import java.util.List;
@@ -37,6 +40,8 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
         public RadioButton radioButtonD;
         public RadioButton radioButtonE;
         public RadioButton radioButtonF;
+        public RadioButton radioButtonG;
+        public ChipGroup chipGroup;
         public ProgressBar questionProgressBar;
         private Context context;
 
@@ -54,6 +59,8 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
             radioButtonD = itemView.findViewById(R.id.answer_d);
             radioButtonE = itemView.findViewById(R.id.answer_e);
             radioButtonF = itemView.findViewById(R.id.answer_f);
+            radioButtonG = itemView.findViewById(R.id.answer_g);
+            chipGroup = itemView.findViewById(R.id.tagGroup);
 
             // set MainActivity views
             questionProgressBar = mainActivity.findViewById(R.id.questionsProgress);
@@ -71,9 +78,14 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
 
             if (position != RecyclerView.NO_POSITION) {
                 Question question = mainActivity.getQuestionList().get(position);
-                String message = "Category: " + question.getCategory() + "\n" + "Difficulty: " + question.getDifficulty();
 
-                Toast.makeText(this.context, message, Toast.LENGTH_SHORT).show();
+                if (question.getCategory() != null
+                    && question.getDifficulty() != null){
+                    String message = question.getMessage();
+
+                    if (!message.isEmpty())
+                        Toast.makeText(this.context, message, Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }
@@ -109,6 +121,10 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
         RadioButton radioButtonAnswerD = holder.radioButtonD;
         RadioButton radioButtonAnswerE = holder.radioButtonE;
         RadioButton radioButtonAnswerF = holder.radioButtonF;
+        RadioButton radioButtonAnswerG = holder.radioButtonG;
+
+        // set Chip Group
+        ChipGroup chipGroup = holder.chipGroup;
 
         // set ProgressBar
         ProgressBar questionProgressBar = holder.questionProgressBar;
@@ -137,6 +153,22 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
             radioButtonAnswerF.setText(question.getAnswers().getAnswer_f());
         }
 
+        if (position % 2 == 0){
+            radioButtonAnswerG.setVisibility(View.VISIBLE);
+            radioButtonAnswerE.setText("Wrong answer!");
+        }
+
+        // set Chips
+        for (Tag tag : question.getTags()){
+            Chip chip = new Chip(holder.context);
+            chip.setText(tag.getName());
+            chip.setChipBackgroundColorResource(R.color.colorAccent);
+            chip.setTextColor(Color.WHITE);
+
+            chipGroup.addView(chip);
+        }
+
+
         // set Button
         Button checkAnswerButton = holder.checkButton;
         checkAnswerButton.setOnClickListener(new View.OnClickListener() {
@@ -160,38 +192,54 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
                     }
                     else{
                         mainActivity.subtractPoints();
-
-                        Toast.makeText(holder.context, "Incorrect answer! Current points: " + mainActivity.getPoints(), Toast.LENGTH_LONG).show();
+                        if (answeredQuestions != mainActivity.getQuestionCount()) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);
+                            builder
+                                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            mainActivity.reloadActivity();
+                                        }
+                                    })
+                                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            dialog.dismiss();
+                                        }
+                                    })
+                                    .setMessage("Current points: " + mainActivity.getPoints() + ".\nWant to start over?")
+                                    .setTitle("Incorrect answer");
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+                        }
                     }
 
                     for (int i = 0; i < radioGroupAnswers.getChildCount(); i++) {
                         ((RadioButton) radioGroupAnswers.getChildAt(i)).setEnabled(false);
                     }
 
-                    if (answeredQuestions == mainActivity.getQuestionCount()){
-                        AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);
-                        builder
-                                .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        Intent intent = new Intent(mainActivity, ResultActivity.class);
-                                        intent.putExtra("result", String.valueOf(mainActivity.getPoints())); // result parameter
-
-                                        mainActivity.startActivity(intent);
-                                    }
-                                })
-                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.dismiss();
-                                    }
-                                })
-                                .setMessage(mainActivity.getPoints() + " points.")
-                                .setTitle("Final result");
-                        AlertDialog dialog = builder.create();
-                        dialog.show();
-                    }
-
                 } else {
                     Toast.makeText(holder.context, "You have to select an answer.", Toast.LENGTH_SHORT).show();
+                }
+
+                if (answeredQuestions == mainActivity.getQuestionCount()){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);
+                    builder
+                            .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    Intent intent = new Intent(mainActivity, ResultActivity.class);
+                                    intent.putExtra("result", String.valueOf(mainActivity.getPoints())); // result parameter
+
+                                    mainActivity.startActivity(intent);
+                                }
+                            })
+                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .setMessage(mainActivity.getPoints() + " points.")
+                            .setTitle("Game over");
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
                 }
             }
         });

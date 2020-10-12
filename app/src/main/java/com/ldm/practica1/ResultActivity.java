@@ -20,7 +20,7 @@ public class ResultActivity extends AppCompatActivity {
         String result = extras.getString("result");
 
         resultTextView = findViewById(R.id.resultTextView);
-        resultTextView.setText("Final points: " + result);
+        resultTextView.setText(result + " points");
 
         // set Fab
         FloatingActionButton fab = findViewById(R.id.reloadFab);

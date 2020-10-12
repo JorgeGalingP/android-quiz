@@ -171,4 +171,21 @@ public class Question {
                 ", difficulty='" + difficulty + '\'' +
                 '}';
     }
+
+    public String getMessage(){
+        String message = "";
+        if (!this.getCategory().isEmpty()
+                && !this.getDifficulty().isEmpty())
+            message = "Category: " + this.getCategory() + "\n" + "Difficulty: " + this.getDifficulty();
+
+        if (!this.getCategory().isEmpty()
+                && this.getDifficulty().isEmpty())
+            message = "Category: " + this.getCategory();
+
+        if (this.getCategory().isEmpty()
+                && !this.getDifficulty().isEmpty())
+            message = "Difficulty: " + this.getDifficulty();
+
+        return message;
+    }
 }

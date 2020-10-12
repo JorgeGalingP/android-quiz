@@ -9,6 +9,13 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp">
 
+    <com.google.android.material.chip.ChipGroup
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="10dp"
+            android:id="@+id/tagGroup">
+    </com.google.android.material.chip.ChipGroup>
+
     <TextView
             android:id="@+id/questionTextView"
             android:layout_width="match_parent"
@@ -57,6 +64,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="gone"/>
+
+        <RadioButton
+                android:id="@+id/answer_g"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:drawableLeft="@drawable/wrong_option"/>
     </RadioGroup>
 
     <Button
@@ -64,4 +78,5 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/check"/>
+
 </LinearLayout>
